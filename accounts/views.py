@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 
 
 # Create your views here.
+@login_required
 def indexView(request):
     return render(request, 'index.html')
 
@@ -19,6 +20,19 @@ def dashboardView(request):
     return render(request, 'dashboard.html')
 
 
+# def home(request):
+#     if request.method == "POST":
+#         form = ImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#     form = ImageForm()
+#     img = Image.objects.all()
+#     latlon = []
+#     for x in img:
+#         print(type(x.photo), "aaaaaaaaaaaaaaaaaaaaaaaaa")
+#         latlon.append(Location.location(x.photo))
+#     return render(request, 'myapp/home.html', {'img': img, 'form': form, 'latlon': latlon})
+@login_required
 def home(request):
     if request.method == "POST":
         form = ImageForm(request.POST, request.FILES)
@@ -26,13 +40,13 @@ def home(request):
             form.save()
     form = ImageForm()
     img = Image.objects.all()
+
     latlon = []
-    for x in img:
-        print(type(x.photo), "aaaaaaaaaaaaaaaaaaaaaaaaa")
-        latlon.append(Location.location(x.photo))
-    return render(request, 'myapp/home.html', {'img': img, 'form': form, 'latlon': latlon})
+    for i in img:
+        latlon.append(Location.location(i.photo))
+    return render(request, 'index.html', {'form': form, 'img': img,'latlog':latlon})
 
-
+@login_required
 def registerView(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
@@ -62,14 +76,14 @@ def login_view(request):
     else:
         return render(request, 'login.html')
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('accounts:login_url')
 
 
 def register_view(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         First_name = request.POST.get('fname')
         Last_name = request.POST.get('lname')
         user_name = request.POST.get('uname')
@@ -82,7 +96,8 @@ def register_view(request):
                 return render(request, 'register.html')
 
             else:
-                User.objects.create_user(first_name=First_name, last_name=Last_name, username=user_name, password=password1,
+                User.objects.create_user(first_name=First_name, last_name=Last_name, username=user_name,
+                                         password=password1,
                                          email=email)
                 return redirect('accounts:login_url')
         else:
@@ -90,3 +105,7 @@ def register_view(request):
 
     else:
         return render(request, 'register.html')
+
+
+def index(request):
+    pass
